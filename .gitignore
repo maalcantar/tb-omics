@@ -1,0 +1,28 @@
+# Compiled code #
+*.o
+*.dll
+*.exe 
+
+# Packages #
+*.7z
+*.gz
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs #
+*.log
+
+# OS generated files #
+.DS_Store
+Thumbs.db
+desktop.ini
+
+ 
+# Backup files #
+**/*~
+
+# Ignore xml files because they're too big #
+**/*.xml
+*.xml
