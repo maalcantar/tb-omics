@@ -1,0 +1,2 @@
+SMPDB ID,Pathway Name,Pathway Subject,Metabolite ID,Metabolite Name,HMDB ID,KEGG ID,ChEBI ID,DrugBank ID,CAS,Formula,IUPAC,SMILES,InChI,InChI Key
+SMP0000617,Cimetidine Metabolism Pathway,Drug Metabolism,PW_C009004,Cimetidine,HMDB0014644,C06952,3699,DB00501,51481-61-9,C10H16N6S,(Z)-1-cyano-2-methyl-3-(2-{[(5-methyl-1H-imidazol-4-yl)methyl]sulfanyl}ethyl)guanidine,C\N=C(\NCCSCC1=C(C)NC=N1)NC#N,"InChI=1S/C10H16N6S/c1-8-9(16-7-15-8)5-17-4-3-13-10(12-2)14-6-11/h7H,3-5H2,1-2H3,(H,15,16)(H2,12,13,14)",AQIXAKUUQRKLND-UHFFFAOYSA-N

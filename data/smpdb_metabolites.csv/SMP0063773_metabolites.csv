@@ -1,0 +1,2 @@
+SMPDB ID,Pathway Name,Pathway Subject,Metabolite ID,Metabolite Name,HMDB ID,KEGG ID,ChEBI ID,DrugBank ID,CAS,Formula,IUPAC,SMILES,InChI,InChI Key
+SMP0063773,BTG Family Proteins and Cell Cycle Regulation,Protein,PW_C001104,Phosphate,HMDB0001429,C00009,18367,"",14265-44-2,O4P,phosphate,[O-]P([O-])([O-])=O,"InChI=1S/H3O4P/c1-5(2,3)4/h(H3,1,2,3,4)/p-3",NBIIXXVUZAFLBC-UHFFFAOYSA-K

@@ -1,0 +1,2 @@
+SMPDB ID,Pathway Name,Pathway Subject,Metabolite ID,Metabolite Name,HMDB ID,KEGG ID,ChEBI ID,DrugBank ID,CAS,Formula,IUPAC,SMILES,InChI,InChI Key
+SMP0000619,Felodipine Metabolism Pathway,Drug Metabolism,PW_C009456,Felodipine,HMDB0015158,,585948,DB01023,72509-76-3,C18H19Cl2NO4,"3-ethyl 5-methyl 4-(2,3-dichlorophenyl)-2,6-dimethyl-1,4-dihydropyridine-3,5-dicarboxylate",CCOC(=O)C1=C(C)NC(C)=C(C1C1=C(Cl)C(Cl)=CC=C1)C(=O)OC,"InChI=1S/C18H19Cl2NO4/c1-5-25-18(23)14-10(3)21-9(2)13(17(22)24-4)15(14)11-7-6-8-12(19)16(11)20/h6-8,15,21H,5H2,1-4H3",RZTAMFZIAATZDJ-UHFFFAOYSA-N

@@ -1,0 +1,3 @@
+SMPDB ID,Pathway Name,Pathway Subject,Metabolite ID,Metabolite Name,HMDB ID,KEGG ID,ChEBI ID,DrugBank ID,CAS,Formula,IUPAC,SMILES,InChI,InChI Key
+SMP0063898,Lectin-Induced Complement Pathway ,Protein,PW_C000353,Calcium,HMDB0000464,C00076,29108,DB01373,14127-61-8,Ca,calcium(2+) ion,[Ca++],InChI=1S/Ca/q+2,BHPQYMZQTOCNFJ-UHFFFAOYSA-N
+SMP0063898,Lectin-Induced Complement Pathway ,Protein,PW_C000423,Magnesium,HMDB0000547,C00305,18420,DB01378,22537-22-0,Mg,magnesium(2+) ion,[Mg++],InChI=1S/Mg/q+2,JLVVSXFLKOJNIY-UHFFFAOYSA-N

@@ -1,0 +1,3 @@
+SMPDB ID,Pathway Name,Pathway Subject,Metabolite ID,Metabolite Name,HMDB ID,KEGG ID,ChEBI ID,DrugBank ID,CAS,Formula,IUPAC,SMILES,InChI,InChI Key
+SMP0063783,Phospholipase C Signaling Pathway ,Protein,PW_C001420,Water,HMDB0002111,C00001,15377,,7732-18-5,H2O,water,O,InChI=1S/H2O/h1H2,XLYOFNOQVPJJNP-UHFFFAOYSA-N
+SMP0063783,Phospholipase C Signaling Pathway ,Protein,PW_C000353,Calcium,HMDB0000464,C00076,29108,DB01373,14127-61-8,Ca,calcium(2+) ion,[Ca++],InChI=1S/Ca/q+2,BHPQYMZQTOCNFJ-UHFFFAOYSA-N
