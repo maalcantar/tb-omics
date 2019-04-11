@@ -1,0 +1,2 @@
+SMPDB ID,Pathway Name,Pathway Subject,Metabolite ID,Metabolite Name,HMDB ID,KEGG ID,ChEBI ID,DrugBank ID,CAS,Formula,IUPAC,SMILES,InChI,InChI Key
+SMP0063771,Ahr Signal Transduction Pathway,Protein,PW_C096983,"2,3,7,8-tetrachlorodibenzo-p-dioxin",,,,,1746-01-6,C12H4Cl4O2,,[H]C1=C2OC3=C([H])C(Cl)=C(Cl)C([H])=C3OC2=C([H])C(Cl)=C1Cl,InChI=1S/C12H4Cl4O2/c13-5-1-9-10(2-6(5)14)18-12-4-8(16)7(15)3-11(12)17-9/h1-4H,HGUFODBRKLSHSI-UHFFFAOYSA-N
