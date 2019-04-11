@@ -22,6 +22,7 @@ desktop.ini
  
 # Backup files #
 **/*~
+*.swp
 
 # Ignore xml files because they're too big #
 **/*.xml
