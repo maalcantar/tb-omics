@@ -68,19 +68,22 @@ def oneHotLabels(case_control):
 # i) Hyperparmeter serach -- done ii) feature selection (serach for best threshold value) -- done iii) test models
 # using different time points (currently just takes all casedand control data) iv) qualitative data?
 # v) how much data do we need in train vs. test (+validation)
-def SVM_model(data, features, alpha=0.001, plot=True, kernel='linear'):
+def SVM_model(data, features, labels, alpha=0.001, plot=True, kernel='linear'):
     # assigning labels to control (0) and case (1) subjects
     case_control = oneHotLabels(data['group']) 
 
     # data matrix will only consist of metabolite features (excluding other qualitative data)
     # dropping columns (features) with nan values -- most of these don't have enough info to impute
-    fullSVM_df = data.loc[:,features].dropna(axis=1)#
-    X_train, X_test, y_train, y_test = train_test_split(fullSVM_df, case_control, test_size=0.20, random_state=42)
+    X_df = data.loc[:,features].dropna(axis=1)#
+    # labels matrix contains all metadata
+    y_df = data.loc[:, labels]
+    y_df['group'] = oneHotLabels(y_df['group'])
+    X_train, X_test, y_train, y_test = train_test_split(X_df, y_df, test_size=0.20, random_state=42)
 
     # running SVM
     threshold=0.01
     
-    params, CVscore, model = train_SVM(X_train, y_train, kernel=kernel, alpha=alpha, threshold=threshold)
+    #params, CVscore, model = train_SVM(X_train, y_train, kernel=kernel, alpha=alpha, threshold=threshold)
     
     if kernel == 'linear':
         SVMFeat_df = pd.DataFrame([model.named_steps['clf'].coef_[0]], 
@@ -90,7 +93,6 @@ def SVM_model(data, features, alpha=0.001, plot=True, kernel='linear'):
         # calculating model accurarcy
     modelAccuracy = model.score(X_test, y_test)
     print('The accuracy was:', modelAccuracy)
-    print('The average CV score was:', CVscore)
     
     
     if plot:
@@ -111,8 +113,9 @@ def SVM_model(data, features, alpha=0.001, plot=True, kernel='linear'):
     return modelAccuracy, CVscore, SVMFeat_df
 
 
-
-def train_SVM(X_train, y_train, kernel='linear', alpha=0.001, threshold=0.01):
+def train_SVM(X_train, y_train, 
+              kernel='linear', alpha=0.001, threshold=0.01,
+              save=False, output='SVM_optimized'):
     cv = RepeatedStratifiedKFold(n_splits=10,n_repeats=4, random_state=42)
     if kernel == 'linear':
         ### ------- Everything in this block is for the hyperparameter sweep ------- ###
@@ -127,42 +130,76 @@ def train_SVM(X_train, y_train, kernel='linear', alpha=0.001, threshold=0.01):
                           ('clf', clf), 
                         ])
         # range of threshold values to test
-        param_grid = {'fs__threshold': np.linspace(0.001, 15, num=25)} # clf__alpha': np.logspace(-5, -3, num=3)
+        param_grid = {'fs__threshold': np.linspace(0.001, 25, num=25), 
+                      'clf__alpha': np.logspace(-6, -2, num=6),
+                      'clf__loss' : ['hinge', 'log', 'modified_huber']}
     else:
         # setting up non-linear model (either radial basis function or sigmoid)
         model = svm.SVC(kernel=kernel, C = 10.0, gamma=0.1)
         # setting up grid for hyperparameter search
-        param_grid = {'C': [0.0001, 0.001, 0.1, 1, 10, 100,1000], 'gamma': [0.00001, 0.001, 0.01, 0.1, 1, 10, 100]}
+        param_grid = {'C': np.logspace(-4, 3, num=7), 
+                      'gamma': np.logspace(-5, 2, num=7)}
         # performing grid search
     grid = GridSearchCV(model, param_grid=param_grid, cv=cv)
     grid.fit(X_train, y_train)
     best_params = grid.best_params_
     best_CVscore = grid.best_score_
-    best_model = grid.best_estimator_
     
-    print("The best parameters are %s with a score of %0.2f"% (grid.best_params_, grid.best_score_))
+    print("The best parameters are %s with a score of %0.2f"% (best_params, best_CVscore))
     
-    return best_params, best_CVscore, best_model
-
+    pickle_file = output + '.pkl'
+    if save:
+         with open(pickle_file, 'wb') as f:
+             pickle.dump(grid, f)
+         CVresults = pd.DataFrame(data=grid.cv_results_, 
+                                  columns=['param_fs__threshold', 'param_clf__alpha',
+                                           'param_clf__loss', 'mean_test_score'])
+         CVresults.to_csv(output + '.csv')
+    
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', help='standardized measurements', 
                         required=True)
-    parser.add_argument('-o', help='output file to pickle best model to', 
+    parser.add_argument('-o', help='output filename (hyperparam results + best model)', 
                         required=True)
     parser.add_argument('-x', help='pickled features and labels',
                         default='fl.pkl')
+    parser.add_argument('-k', help='kernel type', default='linear')
+    parser.add_argument('-mode', default='train')
     args = parser.parse_args()
     datafile = args.i
     fl = args.x
     modelfile = args.o
+    kernel = args.k
+    mode = args.mode
     
     with open(fl, 'rb') as f:
         features, labels = pickle.load(f)
     data = pd.read_csv(datafile)
     
+    #case_control = oneHotLabels(data['group']) 
+
+    # data matrix will only consist of metabolite features (excluding other qualitative data)
+    # dropping columns (features) with nan values -- most of these don't have enough info to impute
+    X_df = data.loc[:,features].dropna(axis=1)#
+    y_df = data.loc[:, labels]
+    y_df['group'] = oneHotLabels(y_df['group'])
+    X_train, X_test, y_train, y_test = train_test_split(X_df, y_df, test_size=0.20, random_state=42)
     
-    SVM_model(data, features)
+    
+    if mode == 'train':
+        # running SVM
+        train_SVM(X_train, y_train['group'], kernel=kernel, save=True, output=modelfile) 
+    else:
+        with open(modelfile, 'rb') as f:
+            grid = pickle.load(f)
+        model = grid.best_estimator_
+        
+        #first group by region and predict
+        #for ( ) in 
+        
+        #group by timepoint
+        
     
 main()
     
