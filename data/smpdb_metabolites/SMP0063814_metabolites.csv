@@ -1,0 +1,2 @@
+SMPDB ID,Pathway Name,Pathway Subject,Metabolite ID,Metabolite Name,HMDB ID,KEGG ID,ChEBI ID,DrugBank ID,CAS,Formula,IUPAC,SMILES,InChI,InChI Key
+SMP0063814,Complement Pathway,Protein,PW_C001420,Water,HMDB0002111,C00001,15377,,7732-18-5,H2O,water,O,InChI=1S/H2O/h1H2,XLYOFNOQVPJJNP-UHFFFAOYSA-N

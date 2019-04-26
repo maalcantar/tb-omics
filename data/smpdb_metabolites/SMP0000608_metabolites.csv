@@ -1,0 +1,2 @@
+SMPDB ID,Pathway Name,Pathway Subject,Metabolite ID,Metabolite Name,HMDB ID,KEGG ID,ChEBI ID,DrugBank ID,CAS,Formula,IUPAC,SMILES,InChI,InChI Key
+SMP0000608,Fluorouracil Metabolism Pathway,Drug Metabolism,PW_C009039,Fluorouracil,HMDB0014684,C07649,46345,DB00544,51-21-8,C4H3FN2O2,"5-fluoro-1,2,3,4-tetrahydropyrimidine-2,4-dione",FC1=CNC(=O)NC1=O,"InChI=1S/C4H3FN2O2/c5-2-1-6-4(9)7-3(2)8/h1H,(H2,6,7,8,9)",GHASVSINZRGABV-UHFFFAOYSA-N

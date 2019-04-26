@@ -1,0 +1,4 @@
+SMPDB ID,Pathway Name,Pathway Subject,Metabolite ID,Metabolite Name,HMDB ID,KEGG ID,ChEBI ID,DrugBank ID,CAS,Formula,IUPAC,SMILES,InChI,InChI Key
+SMP0063772,Apoptotic DNA Fragmentation and Tissue Homeostasis,Protein,PW_C001051,Hydrogen,HMDB0001362,C00282,18276,,1333-74-0,H2,,[H][H],InChI=1S/H2/h1H,UFHFLCQGNIYNRP-UHFFFAOYSA-N
+SMP0063772,Apoptotic DNA Fragmentation and Tissue Homeostasis,Protein,PW_C001005,Zinc (II) ion,HMDB0001303,C00038,29105,DB01593,23713-49-7,Zn,zinc(2+) ion,[Zn++],InChI=1S/Zn/q+2,PTFCDOFLOPIGGS-UHFFFAOYSA-N
+SMP0063772,Apoptotic DNA Fragmentation and Tissue Homeostasis,Protein,PW_C009795,Zinc,HMDB0015532,,27363,DB01593,7440-66-6,Zn,zinc,[Zn],InChI=1S/Zn,HCHKCACWOHOZIP-UHFFFAOYSA-N

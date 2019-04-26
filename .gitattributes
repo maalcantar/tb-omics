@@ -1,5 +1,4 @@
 data/iRef13_hmdb_recon_net_woSpace.txt filter=lfs diff=lfs merge=lfs -text
-
 *.ipynb filter=nbstripout
-
 *.ipynb diff=ipynb
+data/smpdb_metabolites.csv filter=lfs diff=lfs merge=lfs -text
