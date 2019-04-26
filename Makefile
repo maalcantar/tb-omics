@@ -10,6 +10,7 @@ LTB_X = ./data/analysis/fl_ltb.pkl
 # Grid search results pickle/csv
 LTB_LIN = ./data/analysis/svm_ltb_lin
 LTB_RBF = ./data/analysis/svm_ltb_rbf
+LTB_RF = ./data/analysis/Random_Forest_Model
 # Accuracy results
 LTB_LIN_ALL := $(LTB_LIN)_all.csv
 LTB_LIN_SITE := $(LTB_LIN)_site.csv
@@ -17,11 +18,15 @@ LTB_LIN_TIME := $(LTB_LIN)_time.csv
 LTB_RBF_ALL := $(LTB_RBF)_all.csv
 LTB_RBF_SITE := $(LTB_RBF)_site.csv
 LTB_RBF_TIME := $(LTB_RBF)_time.csv
+LTB_RF_ALL := $(LTB_RF)_all.csv
+LTB_RF_SITE := $(LTB_RF)_site.csv
+LTB_RF_TIME := $(LTB_RF)_time.csv
 
 pred_lin: $(LTB_LIN_ALL)
 pred_rbf: $(LTB_RBF_ALL)
+pred_rf: $(LTB_RF_ALL)
 utils.py:
-
+$(LTB_RF): 
 
 $(LTB_O): $(LTB_M) $(LTB_B) $(LTB_P) load_data.py
 	python load_data.py -m $(LTB_M) -b $(LTB_B) -p $(LTB_P) -o $@ -x $(LTB_X)
@@ -43,3 +48,6 @@ $(LTB_LIN_ALL): pred_SVM.py utils.py $(LTB_O) $(LTB_X) $(LTB_LIN)
 
 $(LTB_RBF_ALL): pred_SVM.py utils.py $(LTB_O) $(LTB_X) $(LTB_RBF)
 	python pred_SVM.py -i $(LTB_O) -x $(LTB_X) -m $(LTB_RBF)
+
+$(LTB_RF_ALL): pred_SVM.py $(LTB_O) $(LTB_X) $(LTB_RF)
+	python pred_SVM.py -i $(LTB_O) -x $(LTB_X) -m $(LTB_RF)

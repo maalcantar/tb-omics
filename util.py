@@ -51,6 +51,33 @@ def plotROC(df, filename, cond=True):
     ax.set_ylim([0.0, 1.05])
     ax.set_xlabel('False Positive Rate')
     ax.set_ylabel('True Positive Rate')
-    plt.title('SVM ROC')
+    plt.title('ROC')
     plt.legend(loc="lower right")
+    plt.savefig(filename)
+    
+def plotPRC(df, filename, cond=True):
+    fig = plt.figure(dpi=400,)
+    ax = fig.add_subplot(1, 1, 1)
+    #step_kwargs = ({'step': 'post'}
+    #                if 'step' in signature(plt.fill_between).parameters
+    #                else {})
+    #plt.step(recall, precision, color='b', alpha=0.2,
+    #         where='post')
+    
+    for ind, row in df.iterrows():
+        precision = row['precision']
+        recall = row['recall']
+        if cond:
+            cond = ind
+        else:
+            cond = ''
+        ax.step(recall, precision, where='post',
+                label=cond+' (AP = %0.2f)' %row['AP'])
+
+    ax.set_xlabel('Recall')
+    ax.set_ylabel('Precision')
+    ax.set_ylim([0.0, 1.05])
+    ax.set_xlim([0.0, 1.0])
+    plt.title('PRC')
+    plt.legend(loc='lower right')
     plt.savefig(filename)

@@ -7,7 +7,6 @@ Created on Sat Apr 13 16:10:43 2019
 """
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 import seaborn as sns
 import pickle
 import sys 
@@ -17,7 +16,6 @@ import argparse
 from sklearn import linear_model
 from sklearn.feature_selection import SelectFromModel
 from sklearn.pipeline import Pipeline
-from sklearn.utils.fixes import signature
 from sklearn.model_selection import RepeatedStratifiedKFold
 from sklearn.model_selection import GridSearchCV
 from sklearn import svm
@@ -29,44 +27,6 @@ sns.set_style('white')
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
     warnings.filterwarnings("ignore", category=FutureWarning)
-
-
-def plotROC3(df, ax):
-    ax.plot(df['fpr'].values[0], df['tpr'].values[0],
-            label=' (AUC = %0.2f)' % df['roc_auc'].values)
-
-def plotROC2(df):
-    fig = plt.figure(dpi=400, figsize=(3,3))
-    ax = fig.add_subplot(1, 1, 1)
-    for site in df['site'].unique():
-        s_df = df[df['site'].str.contains(site)]
-        ax.plot(s_df['fpr'].values[0], s_df['tpr'].values[0],
-                label=site+' (AUC = %0.2f)' % s_df['roc_auc'].values )
-    ax.plot([0, 1], [0, 1], color='black', lw=2, linestyle=':')
-    ax.set_xlim([0.0, 1.0])
-    ax.set_ylim([0.0, 1.0])
-    ax.set_xlabel('False Positive Rate')
-    ax.set_ylabel('True Positive Rate')
-    plt.title('SVM ROC')
-    plt.legend(loc="lower right")
-    plt.show()
-    
-def plotPRC(recall, precision, averagePrecision):
-    fig = plt.figure(dpi=400, figsize=(3,3))
-    step_kwargs = ({'step': 'post'}
-                    if 'step' in signature(plt.fill_between).parameters
-                    else {})
-    plt.step(recall, precision, color='b', alpha=0.2,
-             where='post')
-    plt.fill_between(recall, precision, alpha=0.2, color='b', **step_kwargs)
-
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.ylim([0.0, 1.05])
-    plt.xlim([0.0, 1.0])
-    plt.title('Precision-Recall curve: AP={0:0.2f}'.format(
-              averagePrecision))
-    plt.show()
 
 
 def train_SVM(X_train, y_train, 

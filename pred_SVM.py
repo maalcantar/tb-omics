@@ -11,7 +11,7 @@ import argparse
 import numpy as np
 import pandas as pd
 from util import make_train_test
-from util import plotROC
+from util import plotROC, plotPRC
 from sklearn.metrics import roc_curve, auc, roc_auc_score
 from sklearn.metrics import average_precision_score
 from sklearn.metrics import precision_recall_curve
@@ -27,8 +27,12 @@ def bootstrap_auc(clf, X_train, y_train, X_test, y_test, nsamples=1000):
     return np.percentile(auc_values, (2.5, 97.5))
 
 def pred_SVM(X_test, y_test, model):
-    y_score = model.predict(X_test)
-    y_score = model.decision_function(X_test)
+    try: #for SVM
+        y_score = model.predict(X_test)
+        y_score = model.decision_function(X_test)
+    except AttributeError: #for RF
+        y_score = model.predict_proba(X_test)[:, 1]
+     
     fpr, tpr, _ = roc_curve(y_test, y_score)
     roc_auc = auc(fpr, tpr)
     
@@ -63,8 +67,8 @@ def main():
     X_train, X_test, y_train, y_test = make_train_test(fl, datafile)
     all_results = pred_SVM(X_test, y_test['group'], model)
     all_results.to_csv(modelfile+'_all.csv')
-    plotROC(all_results, modelfile+'_all.pdf', cond=False)
-    
+    plotROC(all_results, modelfile+'_ROC_all.pdf', cond=False)
+    plotPRC(all_results, modelfile+'_PRC_all.pdf', cond=False)
     ##Split by site and run predictions separately
     site_results = []
     for site in y_test['site'].unique():
@@ -76,7 +80,8 @@ def main():
         site_results.append(s_temp)
     site_results = pd.concat(site_results, sort=False).set_index('site')
     site_results.to_csv(modelfile+'_site.csv')
-    plotROC(site_results, modelfile+'_site.pdf')
+    plotROC(site_results, modelfile+'_ROC_site.pdf')
+    plotPRC(site_results, modelfile+'_PRC_site.pdf')
     
     ##Split into <6 and >6 months to TB and run predictions separately
     time_results = []
@@ -92,7 +97,8 @@ def main():
         time_results.append(t_temp)
     time_results = pd.concat(time_results, sort=False).set_index('time')
     time_results.to_csv(modelfile+'_time.csv')
-    plotROC(time_results, modelfile+'_time.pdf')
+    plotROC(time_results, modelfile+'_ROC_time.pdf')
+    plotPRC(time_results, modelfile+'_PRC_time.pdf')
      
 main() 
     
