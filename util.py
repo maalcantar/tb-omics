@@ -34,6 +34,15 @@ def make_train_test(fl, datafile, test_size=0.20, random_state=42):
     
     return X_train, X_test, y_train, y_test
 
+def make_train_test_group(tr_inds, te_inds, X_train, X_test, y_train, y_test):
+    
+    X_train = X_train[tr_inds]
+    y_train = y_train[tr_inds]   
+    X_test = X_test[te_inds]
+    y_test = y_test[te_inds]
+    
+    return X_train, X_test, y_train, y_test
+
 def plotROC(df, filename, cond=True):
     fig = plt.figure(dpi=400)
     ax = fig.add_subplot(1, 1, 1)
@@ -41,11 +50,15 @@ def plotROC(df, filename, cond=True):
         fpr = row['fpr']
         tpr = row['tpr']
         if cond: 
-            cond = ind
+            cond = ind + ', '
         else:
             cond = ''
+        auc_ci = row['auc_ci']
+        print(auc_ci[0])
         ax.plot(fpr, tpr,
-                label=cond+' (AUC = %0.2f)' % row['roc_auc'])
+                label=(cond+'AUC = %0.2f (95%% CI:%0.2f-%0.2f)' 
+                      %(row['roc_auc'], auc_ci[0], auc_ci[1]))
+                )
     ax.plot([0, 1], [0, 1], color='black', lw=2, linestyle=':')
     ax.set_xlim([0.0, 1.0])
     ax.set_ylim([0.0, 1.05])

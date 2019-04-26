@@ -22,11 +22,13 @@ LTB_RF_ALL := $(LTB_RF)_all.csv
 LTB_RF_SITE := $(LTB_RF)_site.csv
 LTB_RF_TIME := $(LTB_RF)_time.csv
 
+.PHONY: all 
+all: pred_lin pred_rbf pred_rand
+
 pred_lin: $(LTB_LIN_ALL)
 pred_rbf: $(LTB_RBF_ALL)
-pred_rf: $(LTB_RF_ALL)
+pred_rand: $(LTB_RF_ALL)
 utils.py:
-$(LTB_RF): 
 
 $(LTB_O): $(LTB_M) $(LTB_B) $(LTB_P) load_data.py
 	python load_data.py -m $(LTB_M) -b $(LTB_B) -p $(LTB_P) -o $@ -x $(LTB_X)
@@ -37,17 +39,30 @@ $(LTB_X): $(LTB_O)
 		make $<; \
 	fi
 
-$(LTB_LIN): train_SVM.py $(LTB_O) $(LTB_X)
-	python train_SVM.py -i $(LTB_O) -o $@ -x $(LTB_X) -k linear
+$(LTB_LIN).pkl: train_SVM.py $(LTB_O) $(LTB_X)
+	python train_SVM.py -i $(LTB_O) -o $(LTB_LIN) -x $(LTB_X) -k linear
+	
+$(LTB_RBF).pkl: train_SVM.py $(LTB_O) $(LTB_X)
+	python train_SVM.py -i $(LTB_O) -o $(LTB_RBF) -x $(LTB_X) -k rbf
 
-$(LTB_RBF): train_SVM.py $(LTB_O) $(LTB_X)
-	python train_SVM.py -i $(LTB_O) -o $@ -x $(LTB_X) -k rbf
+$(LTB_RF).pkl:
 
-$(LTB_LIN_ALL): pred_SVM.py utils.py $(LTB_O) $(LTB_X) $(LTB_LIN)
+#make hyperparam optimization reports for all models
+%.csv: %.pkl
+	@if test -f $@; then :; else \
+		rm -f $<; \
+		make $<; \
+	fi
+fl.csv: #ignore fl.pkl
+
+%_all.csv: pred_SVM.py utils.py %.pkl
+	python $< -i $(LTB_O) -x $(LTB_X)
+
+$(LTB_LIN_ALL): pred_SVM.py utils.py $(LTB_LIN).pkl
 	python pred_SVM.py -i $(LTB_O) -x $(LTB_X) -m $(LTB_LIN)
 
-$(LTB_RBF_ALL): pred_SVM.py utils.py $(LTB_O) $(LTB_X) $(LTB_RBF)
+$(LTB_RBF_ALL): pred_SVM.py utils.py $(LTB_RBF).pkl
 	python pred_SVM.py -i $(LTB_O) -x $(LTB_X) -m $(LTB_RBF)
 
-$(LTB_RF_ALL): pred_SVM.py $(LTB_O) $(LTB_X) $(LTB_RF)
+$(LTB_RF_ALL): pred_SVM.py utils.py $(LTB_RF).pkl
 	python pred_SVM.py -i $(LTB_O) -x $(LTB_X) -m $(LTB_RF)
