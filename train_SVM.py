@@ -69,8 +69,7 @@ def train_SVM(X_train, y_train,
         if kernel == 'linear':
             CVresults = pd.DataFrame(data=grid.cv_results_, 
                                      columns=['param_fs__threshold', 
-                                              'param_clf__alpha',
-                                              'param_clf__loss', 
+                                              'param_clf__alpha', 
                                               'mean_test_score'])
         else:
             CVresults = pd.DataFrame(data=grid.cv_results_,
