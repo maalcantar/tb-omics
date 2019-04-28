@@ -21,13 +21,18 @@ LTB_RBF_TIME := $(LTB_RBF)_time.csv
 LTB_RF_ALL := $(LTB_RF)_all.csv
 LTB_RF_SITE := $(LTB_RF)_site.csv
 LTB_RF_TIME := $(LTB_RF)_time.csv
+# Weights results
+WEIGHTS_RF := ./data/analysis/Random_Forest_Model_all_weights.csv
+WEIGHTS_SVM := ./data/analysis/svm_ltb_lin_all_weights.csv
+WEIGHTS_VENN := ./data/analysis/svm_rf_weights.pdf
 
 .PHONY: all 
-all: pred_lin pred_rbf pred_rand
+all: pred_lin pred_rbf pred_rand weights_venn
 
 pred_lin: $(LTB_LIN_ALL)
 pred_rbf: $(LTB_RBF_ALL)
 pred_rand: $(LTB_RF_ALL)
+weights_venn: $(WEIGHTS_VENN)
 utils.py:
 
 $(LTB_O): $(LTB_M) $(LTB_B) $(LTB_P) load_data.py
@@ -66,3 +71,6 @@ $(LTB_RBF_ALL): pred_SVM.py utils.py $(LTB_RBF).pkl
 
 $(LTB_RF_ALL): pred_SVM.py utils.py $(LTB_RF).pkl
 	python pred_SVM.py -i $(LTB_O) -x $(LTB_X) -m $(LTB_RF)
+
+$(WEIGHTS_VENN): compare_weights.py $(WEIGHTS_SVM) $(WEIGHTS_RF)
+	python $< -i $(WEIGHTS_SVM) $(WEIGHTS_RF) -o $@

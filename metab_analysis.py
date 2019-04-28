@@ -10,6 +10,8 @@ import numpy as np
 import scipy as sp
 import statsmodels.stats.multitest as multi
 import pickle
+import seaborn as sns
+import matplotlib.pyplot as plt
 import argparse
 
 #calculate p-value on continuous data, selecting appropriate test based on normality & equal variance tests
@@ -50,8 +52,7 @@ def significantMetabolites(ctrl, case, features, alpha_normal=0.05, alpha_diff=0
 def plotMetabolites(metabs, df, filename, by):
     fig, ax = plt.subplots(4, 1, figsize=(4, 4))
     for i, ax in enumerate(ax):
-    
-    sns.violinplot(y=df[metabs_to_plot[i]], x=df['group'], ax=ax)
+        sns.violinplot(y=df[metabs[i]], x=df['group'], ax=ax)
         ax.set_xlabel('')
         
     fig.savefig(filename)
@@ -66,7 +67,7 @@ def main():
     with open(args.x, 'rb') as f:
         features, labels = pickle.load(f)
 
-    full_df['time_bin'] = 
+    
     
     
     

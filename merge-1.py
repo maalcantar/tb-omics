@@ -145,16 +145,12 @@ def significanceTest(ctrl, case, alpha_normal=0.05):
         
     if (np.any(p_normal_ctrl < alpha_normal) and np.any(p_normal_case < alpha_normal)):
         _, p_var = sp.stats.bartlett(ctrl, case)
-        _, p_diff = sp.stats.ttest_ind(ctrl, case, nan_policy='omit', equal_var=(p_var < alpha_normal))
+        _, p_diff = sp.stats.ttest_ind(ctrl, case, nan_policy='omit', 
+                                       equal_var=(p_var < alpha_normal))
     else:
         _, p_diff = sp.stats.ranksums(ctrl, case)
     
     return p_diff
-        stat, p_diff = sp.stats.ttest_ind(ctrl, case, nan_policy='omit', equal_var=(p_var < alpha_normal))
-    else:
-        stat, p_diff = sp.stats.ranksums(ctrl, case)
-    
-    return stat, p_diff
 
 
 def significantMetabolites(ctrl, case, features, labels, alpha_normal=0.05, alpha_diff=0.05):
@@ -164,8 +160,8 @@ def significantMetabolites(ctrl, case, features, labels, alpha_normal=0.05, alph
     for metab in features:
         metab_ctrl = ctrl[metab].values 
         metab_case = case[metab].values
-        if (len(metab_ctrl.shape) > 1):
-            display(metab)
+        #if (len(metab_ctrl.shape) > 1):
+         #   display(metab)
         stat, p_diff = significanceTest(metab_ctrl, metab_case, alpha_normal=alpha_normal)
         pvals.append(p_diff)
         stats.append(stat)
@@ -230,7 +226,7 @@ for (donor, time), group in dup_groups:
 
 corr_df = pd.DataFrame({'donor' : donors, 'timepoint' : times, 'sample_types' : sample_types, 
                         'Pearson correlation' : corr, 'p value' : sig, 'q value' : multi.multipletests(sig, method='fdr_bh')[1]})
-display(corr_df)
+#display(corr_df)
 #Result: all sample preps correlate significantly
 
 
@@ -252,7 +248,7 @@ for (timepoint), group in full_df.groupby(['time_bin']):
     
 #Result: We only see a large number of significant metabolites <6 months to TB
 sig_metab = met_tp[0][met_tp[0]['q'] <= 0.05]
-display(sig_metab)
+#display(sig_metab)
 
 #Plot these for all individuals, color by site
 
@@ -286,7 +282,7 @@ fig.savefig('diff_metab_violin.pdf')
 
 hmdb_ids = convertHMDB(sig_metab['metabolite'].values, chem_df)
 sig_metab['hmdb'] = hmdb_ids
-display(sig_metab)
+#display(sig_metab)
 len(sig_metab[sig_metab['logFC'] > 0])
 
 
@@ -336,12 +332,12 @@ for (site), group in near_tb.groupby(['site']):
     all_metabs = significantMetabolites(ctrl, case, list(ctrl), labels)
     sig_metabs = all_metabs[all_metabs['q'] <= 0.05]
     #print('Timepoint : ' + str(timepoint))
-    display(sig_metabs)
+   # display(sig_metabs)
     met_tp_site.append(all_metabs)
 
 
-display(met_tp[0].sort_values(by='log2fc'))
-display(met_tp[0].sort_values(by='q'))
+#display(met_tp[0].sort_values(by='log2fc'))
+#display(met_tp[0].sort_values(by='q'))
 
 
 #WHAT METABOLITES CORRELATE WITH RISK? 
@@ -389,7 +385,7 @@ corr_df = pd.DataFrame({'metab' : features[1:],
 
 sig_corr_bulk = corr_df[corr_df['q_bulk'] <= 0.05]
 sig_corr_matched = corr_df[corr_df['q_matched'] <= 0.05]
-display(corr_df.sort_values(by='q_bulk'))
+#display(corr_df.sort_values(by='q_bulk'))
 
 #In lumped analysis, there are some metabs that correlate with time to TB
 #Venn diagram of significant metabolites that correlate with time to TB
@@ -421,7 +417,7 @@ for (donor), group in all_ctrl.groupby('donor_id'):
     
     if (shared_features.shape[1] > 1):
         corr_temp, sig_temp = sp.stats.pearsonr(shared_features.values[1:, 0], shared_features.values[1:, 1])
-        display(corr_temp)
+       # display(corr_temp)
 
 
 weights = pd.read_csv('Weights.csv')
@@ -450,10 +446,10 @@ fullData_SVM_dict = {'Linear Full Model': ['linear'],
                      'RBF Full Model': ['rbf']}
 # order will be [modelAccuracy, CVscore, SVMFeat_df]
 
-for model_type, kernel_type in fullData_SVM_dict.items():
-    accuracy, CVmeanScore, FeatureSelection  = SVM_pred_v3(full_df, features, alpha=0.001, 
-                                                           plot = True, kernel = kernel_type[0])
-    fullData_SVM_dict[model_type].extend([accuracy, CVmeanScore, FeatureSelection])
+#for model_type, kernel_type in fullData_SVM_dict.items():
+#    accuracy, CVmeanScore, FeatureSelection  = SVM_pred_v3(full_df, features, alpha=0.001, 
+ #                                                          plot = True, kernel = kernel_type[0])
+ #   fullData_SVM_dict[model_type].extend([accuracy, CVmeanScore, FeatureSelection])
     
 
 fullData_SVM_dict['Linear Full Model'][3].T.sort_values(by=0, ascending=False).head
@@ -487,24 +483,6 @@ AHRI_df = full_df[full_df['site.gr'].str.startswith(sites[0])]
 MRC_df = full_df[full_df['site.gr'].str.startswith(sites[1])]
 SUN_df = full_df[full_df['site.gr'].str.startswith(sites[2])]
 MAK_df = full_df[full_df['site.gr'].str.startswith(sites[3])]
-
-acc = SVM_pred_v3(AHRI_df, features, alpha=0.001, plot = True, kernel = 'linear')
-acc = SVM_pred_v3(MAK_df, features, alpha=0.001, threshold=0.01, plot = True, kernel = 'rbf')
-
-acc = SVM_pred_v3(MRC_df, features, alpha=0.001, plot = True, kernel = 'linear')
-acc = SVM_pred_v3(MRC_df, features, alpha=0.001, threshold=0.01, plot = True, kernel = 'rbf')
-
-acc = SVM_pred_v3(SUN_df, features, alpha=0.001, threshold=0.01, plot = True, kernel = 'rbf')
-
-
-
-
-acc = SVM_pred_v3(SUN_df, features, alpha=0.001, plot = True, kernel = 'linear')
-acc = SVM_pred_v3(MAK_df, features, alpha=0.001, threshold=0.01, plot = True, kernel = 'rbf')
-
-
-acc = SVM_pred_v3(MAK_df, features, alpha=0.001,  plot = True, kernel = 'linear')
-set(full_df['time_to_tb'])
 
 
 
