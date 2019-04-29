@@ -16,7 +16,7 @@ def compare_weights(weight_list, outfile, top_num=25):
     weights = [set(weight.iloc[:,0].values[:top_num]) for weight in weight_list]
     venn2(weights)
     plt.savefig(outfile)
-    
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', nargs='+', help='list of weight files to compare', 
@@ -27,8 +27,11 @@ def main():
     weight_files = args.i
     outfile = args.o
 
-    weight_list = [pd.read_csv(weight_file) for weight_file in weight_files]
-        
+    weight_list = [pd.read_csv(weight_file) for weight_file in weight_files]   
     compare_weights(weight_list, outfile)
+    
+    weights = weights_to_pathways(weight_list[0], 
+                                  './data/external/biochemicals_full_list_5.csv')
+    
     
 main()

@@ -12,7 +12,7 @@ import pandas as pd
 
 from util import make_train_test, make_test_group
 from util import plotROC, plotPRC
-from util import summary_stats, get_weights
+from util import summary_stats, get_weights, weights_to_pathways
 
 import sys 
 import warnings
@@ -99,7 +99,6 @@ def main():
     
     all_results_ens = pd.concat(all_results_ens, sort=False).set_index('seed')
     all_results_ens.to_csv(modelfile+'_all.csv')
-    
     
     if all_weights_ens:
         all_weights_ens = pd.concat(all_weights_ens, sort=False).set_index('seed')

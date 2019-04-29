@@ -27,7 +27,8 @@ WEIGHTS_SVM := ./data/analysis/svm_ltb_lin_all_weights.csv
 WEIGHTS_VENN := ./data/analysis/svm_rf_weights.pdf
 
 .PHONY: all 
-all: pred_lin pred_rbf pred_rand weights_venn
+all: predict weights_venn
+predict: pred_lin pred_rbf pred_rand
 
 pred_lin: $(LTB_LIN_ALL)
 pred_rbf: $(LTB_RBF_ALL)

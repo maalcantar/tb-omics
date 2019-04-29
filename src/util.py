@@ -39,6 +39,7 @@ def make_test_group(te_inds, X_test, y_test):
     return X_test[te_inds], y_test[te_inds]
 
 def summary_stats(ens):
+    ens = ens.dropna(axis=0)
     cols_to_med = ['roc_auc', 'AP', 'accuracy'] 
     
     summary = pd.DataFrame()
@@ -49,6 +50,8 @@ def summary_stats(ens):
         median = vals[med_idx]
         ci = np.percentile(vals, (2.5, 97.5))
         
+        if np.isnan(median): #if nan
+            continue
                 
         summary[col+'_ci'] = [ci]
         summary[col+'_median'] = median
@@ -70,15 +73,31 @@ def summary_stats(ens):
                                left_index=True, right_index=True)
     return summary
         
-def get_weights(weights_ens):
+def get_weights(weights_ens, chemfile):
     weights_ens = weights_ens.abs()
     weights_ens = weights_ens.div(weights_ens.sum(axis=1), axis=0)
     weights_ens = weights_ens.sum(axis=0).transpose()
     weights_ens = pd.DataFrame(data=weights_ens, 
                                columns=['Feature importance'])
+    weights_ens = weights_to_pathways(weights_ens, chemfile)
     weights_ens = weights_ens.sort_values(by='Feature importance',
                                           ascending=False)
-    return weights_ens     #print('CI : ', ci)
+    return weights_ens
+
+def weights_to_pathways(weights_ens, chemfile):
+    chem = pd.read_csv(chemfile)
+    chem.columns = chem.columns.str.lower()
+    chem = chem.set_index('biochemical')
+    #print(chem.columns)
+    chem = chem.loc[:, ['super.pathway', 'sub.pathway']]
+    
+    #print(list(weights_ens)[0])
+    weights_ens = weights_ens.rename(columns=
+                                     {list(weights_ens)[0] : 'Biochemical'})
+    weights_ens = weights_ens.set_index('Biochemical').join(chem)
+    print(weights_ens.head())
+    return weights_ens
+         
 
 def plotROC(df, filename, cond=True):
     fig = plt.figure(dpi=400)

@@ -7,9 +7,7 @@ Collection of metabolomics data was described in Weiner et al.<a href="#note1" i
 ## Reproducing analyses
 The code is also accompanied by a Makefile, which can be used to re-run the analyses and re-make the figures and tables presented in the paper. 
 
-```bash
-make
-```
+Typing `make` or `make all` will re-run all analyses, but 
 
 ## Installation
 First, install the required modules. To run all analyses in a conda virtual environment, create an empty `conda` environment, install `pip`, then use 
