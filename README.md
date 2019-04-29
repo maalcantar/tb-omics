@@ -2,7 +2,7 @@
 
 This repo contains the code to reproduce the analysis completed in "Metabolic profiling of tuberculosis-exposed patient cohort predicts progressor status." Our analyses use previously collected metabolome measurements from a cohort of tuberculosis-exposed individuals to (1) develop and optimize supervised machine learning approaches for predicting progression to active tuberculosis from metabolic profiles and (2) identify common metabolic signatures of tuberculosis progression. 
 
-Collection of metabolomics data was described in [Citation] and can also be found at [Link], but is included in `data/external` for completeness. 
+Collection of metabolomics data was described in Weiner et al.[^fn1] and can also be found on [Metabolomics Workbench](https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project&ProjectID=PR000666) but is included in `data/external` for completeness. 
 
 ## Reproducing analyses
 The code is also accompanied by a Makefile, which can be used to re-run the analyses and re-make the figures and tables presented in the paper. 
@@ -29,4 +29,6 @@ All data files are found in and/or will be written to `data/`
 
 ### source code
 All code is in `src/`
+
+[^fn1]: Weiner, J., Maertzdorf, J., Sutherland, J. S., Duffy, F. J., Thompson, E., Suliman, S., ... & Hanekom, W. A. (2018). Metabolite changes in blood predict the onset of tuberculosis. Nature communications, 9(1), 5208.
 
