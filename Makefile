@@ -33,10 +33,10 @@ pred_lin: $(LTB_LIN_ALL)
 pred_rbf: $(LTB_RBF_ALL)
 pred_rand: $(LTB_RF_ALL)
 weights_venn: $(WEIGHTS_VENN)
-utils.py:
+./src/utils.py:
 
-$(LTB_O): $(LTB_M) $(LTB_B) $(LTB_P) load_data.py
-	python load_data.py -m $(LTB_M) -b $(LTB_B) -p $(LTB_P) -o $@ -x $(LTB_X)
+$(LTB_O): $(LTB_M) $(LTB_B) $(LTB_P) ./src/load_data.py
+	python ./src/load_data.py -m $(LTB_M) -b $(LTB_B) -p $(LTB_P) -o $@ -x $(LTB_X)
 
 $(LTB_X): $(LTB_O)
 	@if test -f $@; then :; else \
@@ -44,11 +44,11 @@ $(LTB_X): $(LTB_O)
 		make $<; \
 	fi
 
-$(LTB_LIN).pkl: train_SVM.py $(LTB_O) $(LTB_X)
-	python train_SVM.py -i $(LTB_O) -o $(LTB_LIN) -x $(LTB_X) -k linear
+$(LTB_LIN).pkl: ./src/train_SVM.py $(LTB_O) $(LTB_X)
+	python $< -i $(LTB_O) -o $(LTB_LIN) -x $(LTB_X) -k linear
 	
-$(LTB_RBF).pkl: train_SVM.py $(LTB_O) $(LTB_X)
-	python train_SVM.py -i $(LTB_O) -o $(LTB_RBF) -x $(LTB_X) -k rbf
+$(LTB_RBF).pkl: ./src/train_SVM.py $(LTB_O) $(LTB_X)
+	python $< -i $(LTB_O) -o $(LTB_RBF) -x $(LTB_X) -k rbf
 
 $(LTB_RF).pkl:
 
@@ -60,17 +60,17 @@ $(LTB_RF).pkl:
 	fi
 fl.csv: #ignore fl.pkl
 
-%_all.csv: pred_SVM.py utils.py %.pkl
+%_all.csv: ./src/pred_SVM.py ./src/utils.py %.pkl
 	python $< -i $(LTB_O) -x $(LTB_X)
 
-$(LTB_LIN_ALL): pred_SVM.py utils.py $(LTB_LIN).pkl
-	python pred_SVM.py -i $(LTB_O) -x $(LTB_X) -m $(LTB_LIN)
+$(LTB_LIN_ALL): ./src/pred_SVM.py ./src/utils.py $(LTB_LIN).pkl
+	python $< -i $(LTB_O) -x $(LTB_X) -m $(LTB_LIN)
 
-$(LTB_RBF_ALL): pred_SVM.py utils.py $(LTB_RBF).pkl
-	python pred_SVM.py -i $(LTB_O) -x $(LTB_X) -m $(LTB_RBF)
+$(LTB_RBF_ALL): ./src/pred_SVM.py ./src/utils.py $(LTB_RBF).pkl
+	python $< -i $(LTB_O) -x $(LTB_X) -m $(LTB_RBF)
 
-$(LTB_RF_ALL): pred_SVM.py utils.py $(LTB_RF).pkl
-	python pred_SVM.py -i $(LTB_O) -x $(LTB_X) -m $(LTB_RF)
+$(LTB_RF_ALL): ./src/pred_SVM.py ./src/utils.py $(LTB_RF).pkl
+	python $< -i $(LTB_O) -x $(LTB_X) -m $(LTB_RF)
 
-$(WEIGHTS_VENN): compare_weights.py $(WEIGHTS_SVM) $(WEIGHTS_RF)
+$(WEIGHTS_VENN): ./src/compare_weights.py $(WEIGHTS_SVM) $(WEIGHTS_RF)
 	python $< -i $(WEIGHTS_SVM) $(WEIGHTS_RF) -o $@
