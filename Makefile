@@ -40,7 +40,7 @@ train: train_lin train_rbf
 		make $<; \
 	fi
 
-svm_rbf_pred_all = ./data/analysis/svm_ltb_rbf_summary.csv
+svm_rbf_pred_all = ./data/analysis/svm_ltb_rbf_all_summary.csv
 svm_rbf_pred_time = ./data/analysis/svm_ltb_rbf_time_summary.csv
 svm_rbf_pred_site = ./data/analysis/svm_ltb_rbf_site_summary.csv
 svm_lin_pred_all = ./data/analysis/svm_ltb_lin_all_summary.csv
@@ -49,11 +49,20 @@ svm_lin_pred_site = ./data/analysis/svm_ltb_lin_site_summary.csv
 rand_pred_all = ./data/analysis/Random_Forest_Model_all_summary.csv
 rand_pred_time = ./data/analysis/Random_Forest_Model_time_summary.csv
 rand_pred_site = ./data/analysis/Random_Forest_Model_site_summary.csv
+# Weights results
+WEIGHTS_RF = ./data/analysis/Random_Forest_Model_all_weights.csv
+WEIGHTS_SVM = ./data/analysis/svm_ltb_lin_all_weights.csv
 
-pred_lin: $(svm_lin_pred_all) $(svm_lin_pred_site) $(svm_pred_time)
-pred_lin: ./src/pred_SVM.py $(LTB_O) $(LTB_LIN) $(LTB_X)
-	python $< -i $(LTB_O) -m $(LTB_LIN) -x $(LTB_X) -o ./data/analysis/svm_ltb_lin
-WEIGHTS_SVM: pred_lin
+pred_rbf: $(svm_rbf_pred_all) $(svm_rbf_pred_site) $(svm_rbf_pred_time)
+pred_lin: $(svm_lin_pred_all) $(svm_lin_pred_site) $(svm_lin_pred_time)
+./data/analysis/%_all_summary.csv: ./src/pred_SVM.py $(LTB_O) ./data/models/%.pkl $(LTB_X)
+	python $< -i $(LTB_O) -m ./data/models/$*.pkl -x $(LTB_X) -o ./data/analysis/$*
+%_site_summary.csv: %_all_summary.csv
+	@if test -f $@; then :; else \
+		rm -f $<; \
+		make $<; \
+	fi
+%_time_summary.csv: %_site_summary.csv
 	@if test -f $@; then :; else \
 		rm -f $<; \
 		make $<; \
@@ -113,16 +122,13 @@ fig3: fig3_lin fig3_rand fig3_rbf
 		make $<; \
 	fi
 
-# Weights results
-WEIGHTS_RF = ./data/analysis/Random_Forest_Model_all_weights.csv
-WEIGHTS_SVM = ./data/analysis/svm_ltb_lin_all_weights.csv
 WEIGHTS_VENN = ./fig/figure3.svm_rf_weights.pdf
 
 
 
 
 	
-weights_venn: $(WEIGHTS_VENN)
+fig4_venn: $(WEIGHTS_VENN)
 $(WEIGHTS_VENN): ./src/compare_weights.py $(WEIGHTS_SVM) $(WEIGHTS_RF)
 	python $< -i $(WEIGHTS_SVM) $(WEIGHTS_RF) -o $@
 

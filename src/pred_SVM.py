@@ -115,7 +115,7 @@ def pred_site(ntrials, fl, datafile, model, outfile, verbose=True):
             site_results_ens.append(s_temp)
         #Save simulation results to *_site_SITENAME.csv
         site_results_ens = pd.concat(site_results_ens, sort=False).set_index('seed') 
-        site_results_ens.to_csv(outfile+'_site_ens'+site+'.csv')
+        site_results_ens.to_csv(outfile+'_site_ens_'+site+'.csv')
         #Get median results
         site_sum_temp = summary_stats(site_results_ens)
         site_sum_temp['site'] = site
@@ -151,7 +151,7 @@ def pred_time(ntrials, fl, datafile, model, outfile, all_results_sum, verbose=Tr
             time_results_ens.append(t_temp)
         #Save simulation results to *_time_TIMEPOINT.csv
         time_results_ens = pd.concat(time_results_ens, sort=False).set_index('seed') 
-        time_results_ens.to_csv(outfile+'_time_ens'+time+'.csv')
+        time_results_ens.to_csv(outfile+'_time_ens_'+time+'.csv')
         #Get median results
         time_sum_temp = summary_stats(time_results_ens)
         time_sum_temp['time'] = time
