@@ -9,7 +9,7 @@ This work was conducted by Cal Gunnarsson and Miguel Alcantar.
 
 Graphical abstract:
 
-![](Figures/TB_omics_graphical_abstract.png)
+![](fig/TB_omics_graphical_abstract.png)
 
 ## Primary scripts and data files
 
