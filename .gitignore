@@ -23,6 +23,7 @@ desktop.ini
 # Backup files #
 **/*~
 *.swp
+**/__pycache__
 
 # Ignore xml files because they're too big #
 **/*.xml

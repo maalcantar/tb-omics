@@ -12,23 +12,31 @@ from matplotlib_venn import venn2
 import seaborn as sns
 sns.set_style('white')
 
-def compare_weights(weight_list, outfile, top_num=25):
+def weights_venn(weight_list, outfile, top_num=25):
     weights = [set(weight.iloc[:,0].values[:top_num]) for weight in weight_list]
-    venn2(weights)
+    labels = ['Linear SVM', 'RandomForest']
+    venn2(weights, set_labels=labels)
     plt.savefig(outfile)
 
+def weights_common(weight_list, outfile, top_num=25):
+    weights = [set(weight.iloc[:,0].values[:top_num]) for weight in weight_list]
+    weights_list = [weight.reset_index(drop=False) for weight in weight_list]
+    for i in range(len(weights) - 1):
+        weights_intersect = weights[i] & weights[i + 1]
+    print(weight_list[0].head())
+    
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', nargs='+', help='list of weight files to compare', 
                         required=True)
-    parser.add_argument('-o', help='output file for plot', required=True)
+    parser.add_argument('-o', nargs=2, help='output files for plot and table', required=True)
     args = parser.parse_args()
     
     weight_files = args.i
     outfile = args.o
 
     weight_list = [pd.read_csv(weight_file) for weight_file in weight_files]   
-    compare_weights(weight_list, outfile)
-    
+    weights_venn(weight_list, outfile[0])
+    weights_common(weight_list, outfile[1])
     
 main()

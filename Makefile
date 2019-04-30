@@ -1,4 +1,4 @@
-all: clean_data 
+all: clean_data train pred figs
 
 # File names for TB progressor vs control data
 LTB_M = ./data/external/measurements_plasma_full.csv ./data/external/measurements_serum_full.csv ./data/external/measurements_plasmarpmi_full.csv
@@ -54,7 +54,9 @@ WEIGHTS_RF = ./data/analysis/Random_Forest_Model_all_weights.csv
 WEIGHTS_SVM = ./data/analysis/svm_ltb_lin_all_weights.csv
 
 pred_rbf: $(svm_rbf_pred_all) $(svm_rbf_pred_site) $(svm_rbf_pred_time)
-pred_lin: $(svm_lin_pred_all) $(svm_lin_pred_site) $(svm_lin_pred_time)
+pred_lin: $(svm_lin_pred_all) $(svm_lin_pred_site) $(svm_lin_pred_time) $(WEIGHTS_SVM)
+pred_rand: $(rand_pred_all) $(rand_pred_site) $(rand_pred_time) $(WEIGHTS_RF)
+pred: $(pred_rbf) $(pred_lin) $(pred_rand)
 ./data/analysis/%_all_summary.csv: ./src/pred_SVM.py $(LTB_O) ./data/models/%.pkl $(LTB_X)
 	python $< -i $(LTB_O) -m ./data/models/$*.pkl -x $(LTB_X) -o ./data/analysis/$*
 %_site_summary.csv: %_all_summary.csv
@@ -67,7 +69,11 @@ pred_lin: $(svm_lin_pred_all) $(svm_lin_pred_site) $(svm_lin_pred_time)
 		rm -f $<; \
 		make $<; \
 	fi
-
+%_weights.csv: %_summary.csv
+	@if test -f $@; then :; else \
+		rm -f $<; \
+		make $<; \
+	fi
 
 svm_lin_roc_all = ./fig/figure2.roc.svm_ltb_lin_all.pdf
 svm_lin_prc_all = ./fig/figure2.prc.svm_ltb_lin_all.pdf
@@ -122,13 +128,26 @@ fig3: fig3_lin fig3_rand fig3_rbf
 		make $<; \
 	fi
 
-WEIGHTS_VENN = ./fig/figure3.svm_rf_weights.pdf
+svm_lin_weights_top = ./fig/table2.svm_ltb_lin_top_weights.tex
+rand_weights_top = ./fig/table2.Random_Forest_Model_top_weights.tex
+table2_top: $(svm_lin_weights_top) $(rand_weights_top)
+
+./fig/table2.%_top_weights.tex: ./src/table.weights.py ./data/analysis/%_all_weights.csv $(LTB_B)
+	python $< -i ./data/analysis/$*_all_weights.csv -b $(LTB_B) -o $@
 
 
+weights_venn = ./fig/figure4a.svm_rf_weights.pdf
+weights_common = ./fig/table2.svm_rf_weights.tex
+fig4a_venn: $(weights_venn) $(weights_common)
+fig4: fig4a_venn
+./fig/figure4a.%.pdf: ./src/compare_weights.py $(WEIGHTS_SVM) $(WEIGHTS_RF)
+	python $< -i $(WEIGHTS_SVM) $(WEIGHTS_RF) -o $@ ./fig/table2.$*.tex
+./fig/table2.%.tex: ./fig/figure4a.%.pdf
+	@if test -f $@; then :; else \
+		rm -f $<; \
+		make $<; \
+	fi
 
+figs: fig2 fig3 fig4
 
-	
-fig4_venn: $(WEIGHTS_VENN)
-$(WEIGHTS_VENN): ./src/compare_weights.py $(WEIGHTS_SVM) $(WEIGHTS_RF)
-	python $< -i $(WEIGHTS_SVM) $(WEIGHTS_RF) -o $@
-
+.PHONY: table2_top

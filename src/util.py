@@ -81,20 +81,6 @@ def get_weights(weights_ens):
     weights_ens = weights_ens.sort_values(by='Feature importance',
                                           ascending=False)
     return weights_ens
-
-def weights_to_pathways(weights_ens, chemfile):
-    chem = pd.read_csv(chemfile)
-    chem.columns = chem.columns.str.lower()
-    chem = chem.set_index('biochemical')
-    #print(chem.columns)
-    chem = chem.loc[:, ['super.pathway', 'sub.pathway']]
-    
-    #print(list(weights_ens)[0])
-    weights_ens = weights_ens.rename(columns=
-                                     {list(weights_ens)[0] : 'Biochemical'})
-    weights_ens = weights_ens.set_index('Biochemical').join(chem)
-    print(weights_ens.head())
-    return weights_ens
          
 def to_array(str_array): 
     float_array = [float(string) for string in str_array[1:-1].split()]
