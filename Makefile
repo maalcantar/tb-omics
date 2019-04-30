@@ -119,9 +119,9 @@ fig3_rand: fig3_rand_site fig3_rand_time
 fig3: fig3_lin fig3_rand fig3_rbf
 
 ./fig/figure3.roc.%_site.pdf: ./src/figure.prc_roc.py ./data/analysis/%_site_summary.csv
-	python $< -i ./data/analysis/$*_site_summary.csv -o $@ ./fig/figure3.prc.$*_site.pdf
+	python $< -i ./data/analysis/$*_site_summary.csv -o $@ ./fig/figure3.prc.$*_site.pdf --multi
 ./fig/figure3.roc.%_time.pdf: ./src/figure.prc_roc.py ./data/analysis/%_time_summary.csv
-	python $< -i ./data/analysis/$*_time_summary.csv -o $@ ./fig/figure3.prc.$*_time.pdf
+	python $< -i ./data/analysis/$*_time_summary.csv -o $@ ./fig/figure3.prc.$*_time.pdf --multi
 ./fig/figure3.prc.%.pdf: ./fig/figure3.roc.%.pdf
 	@if test -f $@; then :; else \
 		rm -f $<; \
@@ -150,4 +150,3 @@ fig4: fig4a_venn
 
 figs: fig2 fig3 fig4
 
-.PHONY: table2_top

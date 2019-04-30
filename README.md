@@ -13,7 +13,7 @@ Typing `make` or `make all` will pre-process data, run all analyses and create a
 * `pred`: evaluates performance of all models 
 * `figs`: makes Figures 2 - 4
 
-As the training and prediction processes are time consuming, these should be run as a background process. Also note that the make targets will only be built if their script/data dependencies change or are deleted. A `.PHONY` target has created for `figs` and `all` to allow them to be re-run regardless of changes to dependencies.
+As the training and prediction processes are time consuming, these should be run as a background process. Also note that the make targets will only be built if their script/data dependencies change or are deleted. 
 
 ## Installation
 First, install the required modules. To run all analyses in a conda virtual environment, create an empty `conda` environment, install `pip`, then use 

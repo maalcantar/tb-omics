@@ -19,7 +19,7 @@ def plotROC(df, filename, cond=True):
         fpr = to_array(row['fpr'])
         tpr = to_array(row['tpr'])
         if cond: 
-            cond = ind + ', '
+            cond = str(ind) + ', '
         else:
             cond = ''
         auc_ci = to_array(row['roc_auc_ci'])
@@ -50,7 +50,7 @@ def plotPRC(df, filename, cond=True):
         precision = to_array(row['precision'])
         recall = to_array(row['recall'])
         if cond:
-            cond = ind + ', '
+            cond = str(ind) + ', '
         else:
             cond = ''
         ap_ci = to_array(row['AP_ci'])
@@ -75,10 +75,9 @@ def main():
     parser.add_argument('--multi', help='multiple curves', action='store_true')
     
     args = parser.parse_args()
-    resultsfile = pd.read_csv(args.i)
+    resultsfile = pd.read_csv(args.i, index_col=0)
     outfile = args.o
-    cond = args.multi
-    
+    cond = args.multi 
     plotROC(resultsfile, outfile[0], cond=cond)
     plotPRC(resultsfile, outfile[1], cond=cond)
 

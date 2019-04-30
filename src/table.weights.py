@@ -37,6 +37,7 @@ def main():
     weights = pd.read_csv(args.i)
     chem = pd.read_csv(args.b)
     weights = weights_to_pathways(weights, chem, args.i)
+    print(weights)
     weights_tables(weights, args.o)
     
 main()
