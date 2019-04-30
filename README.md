@@ -58,7 +58,7 @@ All raw figures can be found in the <code>fig</code> folder. Final figures can b
 
 ### Installation
 
-This directory and associated dependencies can be run by typing the following into command line / terminal:
+This directory and associated dependencies can be installed by typing the following into command line / terminal:
 ~~~
 conda create -n tb-omics python=3.7
 source activate tb-omics
