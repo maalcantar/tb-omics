@@ -13,40 +13,37 @@ Graphical abstract:
 
 ## Primary scripts and data files
 
-The main data files used to conduct analyses can be found in the folder entitled <code>data</code>and include the following files:
+The scripts used to conduct preliminary analyses can be found in the folder entitled <code>notebook</code>. Final scripts can be found in the folder entitled <code>src</code>. 
 
+Scripts are consolidated into a makefile that can be run to automatically reprouce results by typing <code>make</code>. Primary makefiles include:
+* <code>clean_data.py </code>
+    * Concatenates metabolomics data files (measurements_plasma_full, measurements_serum_full, measurements_plasmarpmi_full) and preprocesses data
+    * Data preprocessing consists of quantile-standardization with respect to metabolites (Amaratunga and Cabrera 2011; Bolstad et al 2003). Metabolites were removed if greater than 10% of values were missing. Otherwise, data were imputed as the minimum
+* <code> train </code>
+   * Trains linear and RBF SVM using the full data set. 
+      * this includes conducting a hyperparamter search to optimize the generalization capabilities of our model
+   * The output of this script should be a trained linear and RBF SVM with optimized hyperparameters
+* <code>pred.py</code>
+   * Applies trained SVMs to the full data set in order to classify TB-progressors vs. healthy controls
+   * The output of this script should be ROC and PR curves with associated confidence intervals
+Individual analyses can also be run using the following scripts:
+* <code>figs</code>
+   * Creates ROC and PR curves used to asses models
+
+The main data files used to conduct analysis can be found in <code>data/external</code>. Primary data files include:
 * <code>measurements_plasma_full.csv </code>
     * Metabolomics measurements obtained from patient plasma -- this data is raw and not standardized
 * <code>measurements_serum_full.csv </code>
     *   Metabolomics measurements obtained from patient serum -- this data is raw and not standardized
 * <code>measurements_plasmarpmi_full.csv </code>
     *  Metabolomics measurements obtained from patient samples diluted in RPMI (this was done anytime enough sample for mass spectrometry could not be colleted -- this data is raw and not standardized
-* <code> ParsedHMDB_v4.0.csv </code>
-    *  Metabolites with their corresponding HMDB and pathway
 * <code> biochemicals_full_list_5.csv</code>
-    * Mapping between mass spectrometry identifier to actual biochemical name(e.g., M.11777 to glycine). Additional data includes HMDBs (manually curated for some), associated biochemical pathway, and mass-spec mode used to capture the metabolite (e.g., GC/MS)
+    * Mapping between mass spectrometry identifier to actual biochemical name(e.g., M.11777 to glycine). Additional data includes HMDBs (manually curated for some), associated biochemical pathway, and mass-spec mode used to capture the metabolite (e.g., GC/MS)    
 
-Scripts are consolidated into various makefiles that can be run to automatically reprouce results. Primary makefiles include:
-* <code>load_data.py </code>
-    * Concatenates metabolomics data files (measurements_plasma_full, measurements_serum_full, measurements_plasmarpmi_full) and preprocesses data
-    * Data preprocessing consists of quantile-standardization with respect to metabolites (Amaratunga and Cabrera 2011; Bolstad et al 2003). Metabolites were removed if greater than 10% of values were missing. Otherwise, data were imputed as the minimum
-* <code> train_SVM.py </code>
-   * Trains linear and RBF SVM using the full data set. 
-      * this includes conducting a hyperparamter search to optimize the generalization capabilities of our model
-   * The output of this script should be a trained linear and RBF SVM with optimized hyperparameters
-* <code>pred_SVM.py</code>
-   * Applies trained SVM to the full data set in order to classify TB-progressors vs. healthy controls
-   * The output of this script should be ROC and PR curves with associated confidence intervals
-   
-Additionally, all figures created in the original manuscript can be found in the <code>Figues</code> folder.
-    
+The final optimized models are found in the folder <code>data/models</code>. These models are in pickle format.
+
 
 ## Repo structure
 
-This repo consits of data files, found in the <code>data/external</code> folder, python scripts that are found in the home directory. Scripts automatically set the working directory to the data folder such that data can be easily accessed during analysis. 
+This repo consits of data files, found in the <code>data</code> folder, python scripts that are found in the home directory. Scripts automatically set the working directory to the data folder such that data can be easily accessed during analysis. 
 
-## Reproducibility 
-
-Results can be reproduced by running makefile in python from the terminal / command-line. For example <code> make Makefile </code> will automatically preprocess the data and produce all final figures
-
-## Installation
