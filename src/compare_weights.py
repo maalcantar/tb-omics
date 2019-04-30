@@ -30,8 +30,5 @@ def main():
     weight_list = [pd.read_csv(weight_file) for weight_file in weight_files]   
     compare_weights(weight_list, outfile)
     
-    weights = weights_to_pathways(weight_list[0], 
-                                  './data/external/biochemicals_full_list_5.csv')
-    
     
 main()

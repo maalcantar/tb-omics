@@ -31,7 +31,7 @@ if not sys.warnoptions:
 
 def train_SVM(X_train, y_train, 
               kernel='linear', alpha=0.001, threshold=0.01,
-              save=False, output='SVM_optimized'):
+              save=False, pickle_file='model.pkl', results_file='results.csv'):
     cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=4, random_state=42)
     if kernel == 'linear':
         # hinge loss for linear SVM; L1 for sparsity; don't shuffle data each epoch (reproducibility); 
@@ -61,7 +61,7 @@ def train_SVM(X_train, y_train,
     
     print("The best parameters are %s with a score of %0.2f"% (best_params, best_CVscore))
     
-    pickle_file = output + '.pkl'
+    
     if save:
         with open(pickle_file, 'wb') as f:
              pickle.dump(grid.best_estimator_, f)
@@ -75,25 +75,30 @@ def train_SVM(X_train, y_train,
             CVresults = pd.DataFrame(data=grid.cv_results_,
                                      columns=['param_C', 'param_gamma',
                                               'mean_test_score'])
-    CVresults.to_csv(output + '.csv')
+    CVresults.to_csv(results_file)
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', help='standardized measurements', 
                         required=True)
-    parser.add_argument('-o', help='output filename', 
+    parser.add_argument('-o', help='output file for grid search results', 
                         required=True)
+    parser.add_argument('-m', help='model file for best trained model')
     parser.add_argument('-x', help='pickled features and labels',
                         default='fl.pkl')
     parser.add_argument('-k', help='kernel type', default='linear')
     args = parser.parse_args()
     datafile = args.i
     fl = args.x
+    modelfile = args.m
     outfile = args.o
     kernel = args.k
     
+    if kernel == 'lin': 
+        kernel = 'linear'
     X_train, X_test, y_train, y_test = make_train_test(fl, datafile)
-    train_SVM(X_train, y_train['group'], kernel=kernel, save=True, output=outfile) 
+    train_SVM(X_train, y_train['group'], kernel=kernel, save=True, 
+              pickle_file=modelfile, results_file=outfile) 
     
 main()
     

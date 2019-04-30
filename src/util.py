@@ -9,9 +9,7 @@ Created on Thu Apr 25 19:44:21 2019
 import pandas as pd
 import numpy as np
 import pickle
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set_style('white')
+
 
 from sklearn.model_selection import train_test_split
 
@@ -73,13 +71,13 @@ def summary_stats(ens):
                                left_index=True, right_index=True)
     return summary
         
-def get_weights(weights_ens, chemfile):
+def get_weights(weights_ens):
     weights_ens = weights_ens.abs()
     weights_ens = weights_ens.div(weights_ens.sum(axis=1), axis=0)
     weights_ens = weights_ens.sum(axis=0).transpose()
     weights_ens = pd.DataFrame(data=weights_ens, 
                                columns=['Feature importance'])
-    weights_ens = weights_to_pathways(weights_ens, chemfile)
+    #weights_ens = weights_to_pathways(weights_ens, chemfile)
     weights_ens = weights_ens.sort_values(by='Feature importance',
                                           ascending=False)
     return weights_ens
@@ -98,58 +96,6 @@ def weights_to_pathways(weights_ens, chemfile):
     print(weights_ens.head())
     return weights_ens
          
-
-def plotROC(df, filename, cond=True):
-    fig = plt.figure(dpi=400)
-    ax = fig.add_subplot(1, 1, 1)
-    for ind, row in df.iterrows():
-        fpr = row['fpr']
-        tpr = row['tpr']
-        if cond: 
-            cond = ind + ', '
-        else:
-            cond = ''
-        auc_ci = row['roc_auc_ci']
-       
-        ax.plot(fpr, tpr,
-                label=(cond+'AUC = %0.2f (95%%CI: %0.2f-%0.2f)' 
-                      %(row['roc_auc_median'], auc_ci[0], auc_ci[1]))
-                )
-    ax.plot([0, 1], [0, 1], color='black', lw=2, linestyle=':')
-    ax.set_xlim([0.0, 1.0])
-    ax.set_ylim([0.0, 1.05])
-    ax.set_xlabel('False Positive Rate')
-    ax.set_ylabel('True Positive Rate')
-    plt.title('ROC')
-    plt.legend(loc="lower right")
-    plt.savefig(filename)
-    
-def plotPRC(df, filename, cond=True):
-    fig = plt.figure(dpi=400,)
-    ax = fig.add_subplot(1, 1, 1)
-    #step_kwargs = ({'step': 'post'}
-    #                if 'step' in signature(plt.fill_between).parameters
-    #                else {})
-    #plt.step(recall, precision, color='b', alpha=0.2,
-    #         where='post')
-    
-    for ind, row in df.iterrows():
-        precision = row['precision']
-        recall = row['recall']
-        if cond:
-            cond = ind + ', '
-        else:
-            cond = ''
-        ap_ci = row['AP_ci']
-        ax.step(recall, precision, where='post',
-                label=cond+'AP = %0.2f (95%%CI: %0.2f-%0.2f)'
-                      %(row['AP_median'], ap_ci[0], ap_ci[1])
-                )
-
-    ax.set_xlabel('Recall')
-    ax.set_ylabel('Precision')
-    ax.set_ylim([0.0, 1.05])
-    ax.set_xlim([0.0, 1.0])
-    plt.title('PRC')
-    plt.legend(loc='lower left')
-    plt.savefig(filename)
+def to_array(str_array): 
+    float_array = [float(string) for string in str_array[1:-1].split()]
+    return float_array

@@ -11,8 +11,7 @@ import argparse
 import pandas as pd
 
 from util import make_train_test, make_test_group
-from util import plotROC, plotPRC
-from util import summary_stats, get_weights, weights_to_pathways
+from util import summary_stats, get_weights
 
 import sys 
 import warnings
@@ -62,27 +61,13 @@ def pred_SVM(X_train, X_test, y_train, y_test, model):
     #print('The accuracy was:', modelAccuracy)
     return results_df
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-i', help='standardized measurements', 
-                        required=True)
-    parser.add_argument('-m', help='model file', required=True)
-    parser.add_argument('-x', help='pickled features and labels',
-                        default='fl.pkl')
-    args = parser.parse_args()
-    datafile = args.i
-    modelfile = args.m
-    fl = args.x
-    
-    with open(modelfile + '.pkl', 'rb') as f:
-        model = pickle.load(f)
-    
-    ntrials = 100
-    
+def pred_all(ntrials, fl, datafile, model, outfile, verbose=True):
     #make random train test splits to get ensemble simulations
     all_results_ens = []
     all_weights_ens = []
     for seed in range(ntrials):
+        if (verbose and (seed % 10 == 0)):
+            print('Running '+str(seed)+' of '+str(ntrials))
         X_train, X_test, y_train, y_test = make_train_test(fl, datafile, 
                                                            random_state=seed)
         label_train = y_train['group']
@@ -98,38 +83,39 @@ def main():
             all_weights_ens.append(all_weights)
     
     all_results_ens = pd.concat(all_results_ens, sort=False).set_index('seed')
-    all_results_ens.to_csv(modelfile+'_all.csv')
+    all_results_ens.to_csv(outfile+'_all_ens.csv')
     
     if all_weights_ens:
         all_weights_ens = pd.concat(all_weights_ens, sort=False).set_index('seed')
         #Normalize weights per row to get relative importances
         all_weights_ens = get_weights(all_weights_ens)
-        all_weights_ens.to_csv(modelfile+'_all_weights.csv')
+        all_weights_ens.to_csv(outfile+'_all_weights.csv')
      
     all_results_sum = summary_stats(all_results_ens)
-    all_results_sum.to_csv(modelfile+'_all_summary.csv')
-    plotROC(all_results_sum, modelfile+'_ROC_all.pdf', cond=False)
-    plotPRC(all_results_sum, modelfile+'_PRC_all.pdf', cond=False)
+    all_results_sum.to_csv(outfile+'_all_summary.csv')
     
-    #Split by site and run predictions separately 
-    #Accumulate median results for individual sites
+    return all_results_sum
+
+def pred_site(ntrials, fl, datafile, model, outfile, verbose=True):
     site_results_sum = []
-    for site in y_test['site'].unique():
+    for site in ['AHRI', 'MAK', 'SUN', 'MRC']:
         #Accumulate simulation results for individual sites
         site_results_ens = []
         for seed in range(ntrials):
-           X_train, X_test, y_train, y_test = make_train_test(fl, datafile, 
+            if (verbose and (seed % 10 == 0)):
+                print('Running '+str(seed)+' of '+str(ntrials))
+            X_train, X_test, y_train, y_test = make_train_test(fl, datafile, 
                                                               random_state=seed)
-           te_inds = y_test['site'].str.startswith(site)  
-           X_te_s, y_te_s = make_test_group(te_inds, X_test, y_test)
-           s_temp = pred_SVM(X_train, X_te_s, 
+            te_inds = y_test['site'].str.startswith(site)  
+            X_te_s, y_te_s = make_test_group(te_inds, X_test, y_test)
+            s_temp = pred_SVM(X_train, X_te_s, 
                              y_train['group'], y_te_s['group'], model)
-           s_temp['seed'] = seed
-           s_temp['site'] = site
-           site_results_ens.append(s_temp)
+            s_temp['seed'] = seed
+            s_temp['site'] = site
+            site_results_ens.append(s_temp)
         #Save simulation results to *_site_SITENAME.csv
         site_results_ens = pd.concat(site_results_ens, sort=False).set_index('seed') 
-        site_results_ens.to_csv(modelfile+'_site_'+site+'.csv')
+        site_results_ens.to_csv(outfile+'_site_ens'+site+'.csv')
         #Get median results
         site_sum_temp = summary_stats(site_results_ens)
         site_sum_temp['site'] = site
@@ -137,10 +123,9 @@ def main():
         site_results_sum.append(site_sum_temp)          
      
     site_results_sum = pd.concat(site_results_sum, sort=False).set_index('site')
-    site_results_sum.to_csv(modelfile+'_site_summary.csv')
-    plotROC(site_results_sum, modelfile+'_ROC_site.pdf')
-    plotPRC(site_results_sum, modelfile+'_PRC_site.pdf')
+    site_results_sum.to_csv(outfile+'_site_summary.csv')
 
+def pred_time(ntrials, fl, datafile, model, outfile, all_results_sum, verbose=True):
     #Split into <6 and >6 months to TB and run predictions separately
     time_results_sum = []
     time_all = all_results_sum
@@ -149,6 +134,8 @@ def main():
     for time in ['proximal', 'distal']:
         time_results_ens = []
         for seed in range(ntrials):
+            if (verbose and (seed % 10 == 0)):
+                print('Running '+str(seed)+' of '+str(ntrials))
             #Make split and define subset to test
             X_train, X_test, y_train, y_test = make_train_test(fl, datafile, 
                                                                random_state=seed)
@@ -164,7 +151,7 @@ def main():
             time_results_ens.append(t_temp)
         #Save simulation results to *_time_TIMEPOINT.csv
         time_results_ens = pd.concat(time_results_ens, sort=False).set_index('seed') 
-        time_results_ens.to_csv(modelfile+'_time_'+time+'.csv')
+        time_results_ens.to_csv(outfile+'_time_ens'+time+'.csv')
         #Get median results
         time_sum_temp = summary_stats(time_results_ens)
         time_sum_temp['time'] = time
@@ -172,9 +159,36 @@ def main():
         time_results_sum.append(time_sum_temp) 
         
     time_results_sum = pd.concat(time_results_sum, sort=False).set_index('time')
-    time_results_sum.to_csv(modelfile+'_time_summary.csv')
-    plotROC(time_results_sum, modelfile+'_ROC_time.pdf')
-    plotPRC(time_results_sum, modelfile+'_PRC_time.pdf')
+    time_results_sum.to_csv(outfile+'_time_summary.csv')
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', help='standardized measurements', 
+                        required=True)
+    parser.add_argument('-m', help='model file', required=True)
+    parser.add_argument('-o', help='out file stem', required=True)
+    parser.add_argument('-x', help='pickled features and labels',
+                        default='fl.pkl')
+    args = parser.parse_args()
+    datafile = args.i
+    modelfile = args.m
+    outfile = args.o
+    fl = args.x
+    
+    with open(modelfile, 'rb') as f:
+        model = pickle.load(f)
+    
+    ntrials = 100
+    
+    all_results_sum = pred_all(ntrials, fl, datafile, model, outfile, verbose=True)
+    #Split by site and run predictions separately 
+    #Accumulate median results for individual sites
+    
+    _ = pred_site(ntrials, fl, datafile, model, outfile, verbose=True)
+
+    _ = pred_time(ntrials, fl, datafile, model, outfile, 
+                  all_results_sum, verbose=True)
+    
 
      
 main() 
