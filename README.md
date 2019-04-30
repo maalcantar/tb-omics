@@ -34,7 +34,7 @@ The main external data files used to conduct analysis are:
 * <code> biochemicals_full_list_5.csv</code>
     * Mapping between mass spectrometry identifier to actual biochemical name(e.g., M.11777 to glycine). Additional data includes HMDBs (manually curated for some), associated biochemical pathway, and mass-spec mode used to capture the metabolite (e.g., GC/MS) 
 
-## Scripts
+### Scripts
 The scripts used to conduct preliminary analyses can be found in the folder entitled <code>notebook</code>. The scripts used to conduct the final analyses can be found in the folder entitled <code>src</code>. 
 
 Primary makefile scripts include:
@@ -51,17 +51,21 @@ Primary makefile scripts include:
 Individual analyses can also be run using the following scripts:
 * <code>figs</code>
    * Creates ROC and PR curves used to asses models
-### All unc
+### Figures
+All raw figures can be found in the <code>fig</code> folder. Final figures can be found in the <code>fig_final</code> folder.
 
-## Repository structure
+## Reproducing results
 
-This repo consits of data files, found in the <code>data</code> folder, python scripts that are found in the home directory. Scripts automatically set the working directory to the data folder such that data can be easily accessed during analysis. 
+### Installation
 
-## Installation
-
+This directory and associated dependencies can be run by typing the following into command line / terminal:
 ~~~
 conda create -n tb-omics python=3.7
 source activate tb-omics
 conda install pip
 pip install -r requirements.txt
 ~~~
+
+### Rerun analysis 
+
+The command <code>make</code> will rerun all analysis, including reproducing figures.
